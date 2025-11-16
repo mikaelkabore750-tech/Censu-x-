@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikTok Downloader • Mikael-Dev</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: #020409;
+      color: #fff;
+      overflow-x: hidden;
+    }canvas#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.container {
+  text-align: center;
+  padding-top: 130px;
+}
+
+h1 {
+  font-size: 3rem;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+}
+
+p {
+  opacity: 0.8;
+}
+
+input {
+  width: 80%;
+  max-width: 480px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  margin-top: 35px;
+  font-size: 16px;
+}
+
+.btn {
+  margin-top: 25px;
+  padding: 14px 30px;
+  border: none;
+  background: #00eaff;
+  color: #000;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.btn:hover { opacity: 0.8; }
+
+.preview {
+  margin-top: 40px;
+}
+
+video {
+  width: 260px;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+.back-btn {
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  padding: 12px 22px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: none;
+  background: #00e1ff;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+}
+.back-btn:hover { opacity: 0.85; }
+
+  </style>
+</head>
+<body><canvas id="bg"></canvas> <button class="back-btn" onclick="window.location='main.html'">← Main</button>
+
+<div class="container">
+  <h1>TIKTOK DOWNLOADER</h1>
+  <p>Télécharge une vidéo TikTok sans filigrane</p>  <input type="text" id="tiktokURL" placeholder="Colle le lien TikTok ici...">
+  <br>
+  <button class="btn" onclick="downloadTikTok()">Télécharger</button>  <div id="preview" class="preview"></div>
+</div><script src="tiktok.js"></script><script>
+// Particules fond
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+  draw() {
+    ctx.fillStyle = "#00d5ff";
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+}
+
+for (let i = 0; i < 130; i++) particles.push(new Particle());
+animate();
+
+window.onresize = () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+};
+</script></body>
+</html>

@@ -1,0 +1,295 @@
+<!-- stats.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats - Mikael-Dev</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        header {
+            padding: 20px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #00ff00;
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+        }
+        a.back {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 50px;
+        }
+        .stat-circle {
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        .stat-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+        .info-section {
+            padding: 20px;
+            background: #1a1a1a;
+            margin: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        .rating {
+            padding: 20px;
+        }
+        .stars {
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .star {
+            color: #ccc;
+        }
+        .star.selected {
+            color: #00ff00;
+        }
+        .comments {
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        input, textarea {
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #fff;
+            padding: 10px;
+            width: 300px;
+        }
+        button {
+            background: #00ff00;
+            color: #0a0a0a;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        footer {
+            padding: 10px;
+            background: #1a1a1a;
+            border-top: 1px solid #00ff00;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="mikael-x.png" alt="Mikael-X" class="profile-img">
+        <h1>Stats du Portfolio</h1>
+        <a href="main.html" class="back">Retour à l'accueil</a>
+    </header>
+
+    <section class="stats-container">
+        <div class="stat-circle">
+            <canvas id="viewsChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="viewsCount">0</div>
+        </div>
+        <div class="stat-circle">
+            <canvas id="usersChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="usersCount">0</div>
+        </div>
+        <div class="stat-circle">
+            <canvas id="batteryChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="batteryLevel">N/A</div>
+        </div>
+        <div class="stat-circle">
+            <canvas id="networkChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="networkStrength">N/A</div>
+        </div>
+        <div class="stat-circle">
+            <canvas id="memoryChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="memoryUsage">N/A</div>
+        </div>
+        <div class="stat-circle">
+            <canvas id="xpChart" width="150" height="150"></canvas>
+            <div class="stat-text" id="xpCount">0 XP</div>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <p>Date locale: <span id="localDateTime">N/A</span></p>
+        <p>Date de création: 15 Novembre 2025</p>
+        <p>Owner: Mikael-Dev</p>
+        <p>Rang du site: #1 dans Tech Portfolios (fictif)</p>
+    </section>
+
+    <section class="rating">
+        <h2>Ratez le site</h2>
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <p id="ratingMessage"></p>
+    </section>
+
+    <section class="comments">
+        <h2>Commentaires</h2>
+        <form name="comments" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="comments">
+            <input type="email" name="email" placeholder="Adresse email (requis)" required>
+            <textarea name="comment" placeholder="Votre commentaire"></textarea>
+            <button type="submit">Envoyer</button>
+        </form>
+    </section>
+
+    <section class="contact">
+        <h2>Contact</h2>
+        <a href="contact.html" class="button">Aller à la page Contact</a>
+    </section>
+
+    <footer>
+        <p>Copyright © 2025 Mikael-Dev. Tous droits réservés.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Stats de base (views, users)
+        let views = localStorage.getItem('views') || 0;
+        views = parseInt(views) + 1;
+        localStorage.setItem('views', views);
+        document.getElementById('viewsCount').innerText = views;
+
+        let users = localStorage.getItem('users') || 1; // Simplifié
+        document.getElementById('usersCount').innerText = users;
+
+        // XP system
+        const today = new Date().toDateString();
+        let visitData = JSON.parse(localStorage.getItem('visitData')) || { date: today, count: 0, xp: 0 };
+        if (visitData.date !== today) {
+            visitData = { date: today, count: 0, xp: visitData.xp };
+        }
+        visitData.count += 1;
+        if (visitData.count >= 10) {
+            visitData.xp += 20;
+        }
+        localStorage.setItem('visitData', JSON.stringify(visitData));
+        document.getElementById('xpCount').innerText = `${visitData.xp} XP`;
+
+        // Batterie
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                const level = Math.round(battery.level * 100);
+                document.getElementById('batteryLevel').innerText = `${level}%`;
+                updateChart('batteryChart', level, 'Battery');
+                battery.addEventListener('levelchange', () => {
+                    document.getElementById('batteryLevel').innerText = `${Math.round(battery.level * 100)}%`;
+                    updateChart('batteryChart', Math.round(battery.level * 100), 'Battery');
+                });
+            });
+        } else {
+            document.getElementById('batteryLevel').innerText = 'Non supporté';
+        }
+
+        // Date locale
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('localDateTime').innerText = now.toLocaleString('fr-FR', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Intensité réseau (approximative)
+        function getNetworkStrength() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                const type = connection.type || 'unknown';
+                const effectiveType = connection.effectiveType || 'unknown';
+                let strength = 50; // Default
+                if (effectiveType === '4g' || type === 'wifi') strength = 90;
+                else if (effectiveType === '3g') strength = 60;
+                else if (effectiveType === '2g') strength = 30;
+                document.getElementById('networkStrength').innerText = `${strength}%`;
+                updateChart('networkChart', strength, 'Network');
+            } else {
+                document.getElementById('networkStrength').innerText = 'Non supporté';
+            }
+        }
+        getNetworkStrength();
+        window.addEventListener('online', getNetworkStrength);
+        window.addEventListener('offline', () => {
+            document.getElementById('networkStrength').innerText = 'Offline';
+            updateChart('networkChart', 0, 'Network');
+        });
+
+        // Mémoire (approximative, seulement Chrome/Edge)
+        if (performance.memory) {
+            const used = performance.memory.usedJSHeapSize / 1024 / 1024;
+            const total = performance.memory.jsHeapSizeLimit / 1024 / 1024;
+            const usage = Math.round((used / total) * 100);
+            document.getElementById('memoryUsage').innerText = `${Math.round(used)}/${Math.round(total)} MB`;
+            updateChart('memoryChart', usage, 'Memory');
+        } else {
+            document.getElementById('memoryUsage').innerText = 'Non supporté';
+        }
+
+        // Charts cercles
+        function updateChart(id, value, label) {
+            const ctx = document.getElementById(id).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, 100 - value],
+                        backgroundColor: ['#00ff00', '#1a1a1a'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    responsive: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+                }
+            });
+        }
+
+        // Initialiser charts
+        updateChart('viewsChart', Math.min((views / 1000) * 100, 100), 'Views');
+        updateChart('usersChart', Math.min((users / 100) * 100, 100), 'Users');
+        updateChart('xpChart', Math.min((visitData.xp / 100) * 100, 100), 'XP');
+
+        // Star rating
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.dataset.value;
+                stars.forEach(s => s.classList.remove('selected'));
+                for (let i = 0; i < value; i++) {
+                    stars[i].classList.add('selected');
+                }
+                document.getElementById('ratingMessage').innerText = `Merci pour votre note de ${value}/5 !`;
+            });
+        });
+    </script>
+</body>
+</html>

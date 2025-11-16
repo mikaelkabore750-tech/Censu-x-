@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>X-PANEL • Mikael-Dev</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: #010409;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    canvas#bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .container {
+      padding-top: 100px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+    p {
+      opacity: 0.7;
+    }.panel {
+  width: 90%;
+  max-width: 850px;
+  margin: 40px auto;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.15);
+  text-align: left;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-size: 1.7rem;
+}
+
+textarea, input {
+  width: 100%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  color: white;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.btn {
+  background: #00eaff;
+  color: #000;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn:hover { opacity: 0.8; }
+
+.console-output {
+  width: 100%;
+  height: 180px;
+  background: #000;
+  color: #0f0;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.back-btn {
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  padding: 12px 22px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: none;
+  background: #00e1ff;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+}
+.back-btn:hover { opacity: 0.8; }
+
+  </style>
+</head>
+<body><canvas id="bg"></canvas> <button class="back-btn" onclick="window.location='main.html'">← Main</button>
+
+<div class="container">
+  <h1>X-PANEL</h1>
+  <p>sʏsᴛᴇᴍᴇ ᴇɴᴄᴏʀᴇ ᴇɴ ᴅᴇᴠᴇʟᴏᴘᴘᴇᴍᴇɴᴛ (ᴅᴇs ᴇʀʀᴇᴜʀs ᴘᴇᴜᴠᴇɴᴛ sᴜʀᴠᴇɴɪʀ)</p>  <div class="panel"><div class="section">
+  <h2>📂 Upload File</h2>
+  <input type="file" id="fileUpload">
+  <button class="btn" onclick="fakeUpload()">Upload</button>
+  <p id="upStatus"></p>
+</div>
+
+<div class="section">
+  <h2>📄 Files List</h2>
+  <div id="fileList">Aucun fichier pour le moment…</div>
+</div>
+
+<div class="section">
+  <h2>🖥️ Console</h2>
+  <textarea id="command" rows="2" placeholder="Exemple : npm -v, node --version, cd folder ..."></textarea>
+  <button class="btn" onclick="runCommand()">Run</button>
+  <div class="console-output" id="console"></div>
+</div>
+
+<div class="section">
+  <h2>📜 Logs</h2>
+  <div class="console-output" id="logs">En attente de logs…</div>
+</div>
+
+  </div>
+</div><script>
+// Fake upload
+function fakeUpload() {
+  const f = document.getElementById('fileUpload').files[0];
+  if (!f) return document.getElementById('upStatus').innerText = "Aucun fichier sélectionné.";
+
+  document.getElementById('upStatus').innerText = "Téléversement de " + f.name + "...";
+  setTimeout(() => {
+    document.getElementById('upStatus').innerText = "Upload terminé ✔";
+    document.getElementById('fileList').innerHTML += `<br>📁 ${f.name}`;
+  }, 1200);
+}
+
+// Fake console
+function runCommand() {
+  const cmd = document.getElementById('command').value;
+  if (!cmd) return;
+
+  const output = document.getElementById('console');
+  output.innerHTML += `> ${cmd}\n`;
+
+  setTimeout(() => {
+    output.innerHTML += "Résultat simulé : commande exécutée.\n";
+    output.scrollTop = output.scrollHeight;
+  }, 800);
+}
+
+// Fake logs
+setInterval(() => {
+  const logs = document.getElementById('logs');
+  logs.innerHTML += "[LOG] Process...\n";
+  logs.scrollTop = logs.scrollHeight;
+}, 3000);
+
+// Particules
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+  draw() {
+    ctx.fillStyle = "#00d5ff";
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+}
+
+for (let i = 0; i < 130; i++) particles.push(new Particle());
+animate();
+
+window.onresize = () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+};
+</script></body>
+</html>
